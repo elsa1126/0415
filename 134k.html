@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉義方案 2.1 ｜ 財務解鎖與盈虧模擬 (134k 終極版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #e2e8f0; border-radius: 3px; }
+        #main-progress { transition: width 0.5s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- 警訊提示 -->
+        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg shadow-sm">
+            <h3 class="text-rose-700 font-bold flex items-center gap-2">⚠️ 結構性缺口警訊 (134k 版本)</h3>
+            <p class="text-sm text-rose-600 mt-1">目前總支出需求高達 $134,000，但票房極限僅有 $97,000。這代表即使 100% 完售，仍需至少 <strong>$37,000</strong> 的外部贊助才能完全解鎖所有預算並免於虧損！</p>
+        </div>
+
+        <!-- 核心財務看板 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 bg-white rounded-2xl shadow-sm p-6 border border-slate-100 flex flex-col justify-center">
+                <h1 class="text-xl font-bold text-slate-700 mb-4">嘉義方案 2.1 盈虧模擬器 (終極版)</h1>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">當前總收入 (票款+贊助)</p>
+                        <div class="text-3xl font-black text-blue-600" id="total-revenue">$0</div>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">預估淨損益</p>
+                        <div class="text-3xl font-black" id="net-profit">-$134,000</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-600 rounded-2xl shadow-md p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-6xl">💰</div>
+                <p class="text-blue-100 text-xs uppercase font-bold tracking-wider">手動調整現金贊助</p>
+                <div class="mt-2 flex items-center">
+                    <span class="text-2xl font-bold mr-2">$</span>
+                    <input type="number" id="input-sponsorship" value="0" step="1000" class="bg-blue-500 border-none text-white text-3xl font-black w-full focus:ring-2 focus:ring-white rounded-lg p-1 outline-none">
+                </div>
+                <p class="text-blue-200 text-[10px] mt-2 leading-tight">＊請填入預計可確定入帳的企業或家長贊助款</p>
+            </div>
+        </div>
+
+        <!-- 售票模擬 -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100">
+            <h2 class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-widest">🎟️ 售票進度模擬 (票房極限 $97k)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-bold"><span>早鳥 ($900)</span><span class="text-blue-600"><span id="val-early">25</span>/50張</span></div>
+                    <input type="range" id="slider-early" min="0" max="50" value="25">
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-bold"><span>單人 ($1200)</span><span class="text-blue-600"><span id="val-single">0</span>/10張</span></div>
+                    <input type="range" id="slider-single" min="0" max="10" value="0">
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-bold"><span>雙人 ($2000)</span><span class="text-blue-600"><span id="val-double">0</span>/20張</span></div>
+                    <input type="range" id="slider-double" min="0" max="20" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- 預算解鎖條 -->
+        <div class="bg-white rounded-2xl shadow-sm p-8 border border-slate-100">
+            <div class="relative h-4 bg-slate-100 rounded-full mb-2">
+                <div id="main-progress" class="absolute h-4 bg-blue-500 rounded-full" style="width: 0%"></div>
+                <!-- 刻度 (以 134,000 為 100%) -->
+                <div class="absolute w-full flex justify-between px-1 -top-6 text-[10px] font-bold text-slate-400">
+                    <span class="text-blue-600">START</span>
+                    <span style="position:absolute; left: 22.3%; transform: translateX(-50%);">P0 ($30k)</span>
+                    <span style="position:absolute; left: 35.0%; transform: translateX(-50%);">P0彈性 ($47k)</span>
+                    <span style="position:absolute; left: 57.4%; transform: translateX(-50%);">P1 ($77k)</span>
+                    <span style="position:absolute; left: 64.9%; transform: translateX(-50%);">P2 ($87k)</span>
+                    <span style="position:absolute; right: 0%">P3 ($134k)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5個階段解鎖細節卡片 -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <div id="card-p0" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p0">P0 生存底線</h3>
+                <div class="text-lg font-bold mb-1">$30,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">場地租金、保證金、人員保險</p>
+            </div>
+            
+            <div id="card-p0f" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p0f">P0 彈性</h3>
+                <div class="text-lg font-bold mb-1">$47,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：城市走訪 ($17k)</p>
+            </div>
+
+            <div id="card-p1" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p1">P1 核心品質</h3>
+                <div class="text-lg font-bold mb-1">$77,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：音響設備、預備金</p>
+            </div>
+
+            <div id="card-p2" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p2">P2 人情運作</h3>
+                <div class="text-lg font-bold mb-1">$87,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：海報印刷、表演禮金</p>
+            </div>
+
+            <div id="card-p3" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p3">P3 完整福利</h3>
+                <div class="text-lg font-bold text-rose-500 mb-1">$134,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：形象品、餐食點心、會議、慶功宴</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const PRICES = { early: 900, single: 1200, double: 2000 };
+        const TIERS = [
+            { id: 'p0', limit: 30000 },
+            { id: 'p0f', limit: 47000 },
+            { id: 'p1', limit: 77000 },
+            { id: 'p2', limit: 87000 },
+            { id: 'p3', limit: 134000 }
+        ];
+        const TOTAL_COST = 134000;
+
+        const inputs = ['slider-early', 'slider-single', 'slider-double', 'input-sponsorship'];
+        
+        function update() {
+            const early = parseInt(document.getElementById('slider-early').value);
+            const single = parseInt(document.getElementById('slider-single').value);
+            const double = parseInt(document.getElementById('slider-double').value);
+            const sponsor = parseInt(document.getElementById('input-sponsorship').value) || 0;
+
+            document.getElementById('val-early').innerText = early;
+            document.getElementById('val-single').innerText = single;
+            document.getElementById('val-double').innerText = double;
+
+            const ticketRev = (early * PRICES.early) + (single * PRICES.single) + (double * PRICES.double);
+            const totalRev = ticketRev + sponsor;
+            const profit = totalRev - TOTAL_COST;
+
+            document.getElementById('total-revenue').innerText = `$${totalRev.toLocaleString()}`;
+            
+            const profitEl = document.getElementById('net-profit');
+            profitEl.innerText = (profit >= 0 ? '+' : '') + `$${profit.toLocaleString()}`;
+            // 只要沒賺錢就是紅色
+            profitEl.className = `text-3xl font-black ${profit >= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
+
+            // 計算進度條 (最高100%)
+            const progress = Math.min((totalRev / TOTAL_COST) * 100, 100);
+            document.getElementById('main-progress').style.width = `${progress}%`;
+
+            TIERS.forEach(tier => {
+                const card = document.getElementById(`card-${tier.id}`);
+                const tag = document.getElementById(`tag-${tier.id}`);
+                if (totalRev >= tier.limit) {
+                    card.classList.remove('opacity-50', 'border-slate-100');
+                    card.classList.add('border-blue-500', 'bg-blue-50', 'shadow-md', 'scale-105');
+                    tag.classList.replace('text-slate-400', 'text-blue-600');
+                    if (!tag.innerText.includes('✓')) tag.innerText = `✓ ${tag.innerText}`;
+                    if(tier.id === 'p3') card.querySelector('.text-lg').classList.replace('text-rose-500', 'text-emerald-600');
+                } else {
+                    card.classList.add('opacity-50', 'border-slate-100');
+                    card.classList.remove('border-blue-500', 'bg-blue-50', 'shadow-md', 'scale-105');
+                    tag.classList.replace('text-blue-600', 'text-slate-400');
+                    tag.innerText = tag.innerText.replace('✓ ', '');
+                    if(tier.id === 'p3') card.querySelector('.text-lg').classList.replace('text-emerald-600', 'text-rose-500');
+                }
+            });
+        }
+
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', update));
+        update();
+    </script>
+</body>
+</html>
