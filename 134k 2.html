@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉義方案 2.1 ｜ 財務模擬 (0416 終極版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: #2563eb; cursor: pointer; margin-top: -8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #e2e8f0; border-radius: 3px; }
+        #main-progress { transition: width 0.5s ease; }
+        .marker-transition { transition: left 0.5s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg shadow-sm">
+            <h3 class="text-indigo-700 font-bold flex items-center gap-2">🔄 0416 全面動態成本升級</h3>
+            <p class="text-sm text-indigo-600 mt-1">「城市走訪」、「人員保險」與「晚會點心」已設定為彈性變動成本。固定開銷底線成功降至 $105,000，系統會根據人數自動為這三個項目計費。</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 bg-white rounded-2xl shadow-sm p-6 border border-slate-100 flex flex-col justify-center">
+                <h1 class="text-xl font-bold text-slate-700 mb-4">嘉義方案 2.1 財務決策系統 (0416)</h1>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="col-span-2 lg:col-span-1">
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">當前總收入</p>
+                        <div class="text-3xl font-black text-blue-600" id="total-revenue">$0</div>
+                    </div>
+                    <div class="col-span-2 lg:col-span-1 border-l pl-4 border-slate-100">
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">動態總支出</p>
+                        <div class="text-3xl font-black text-rose-500" id="dynamic-cost">$105,000</div>
+                    </div>
+                    <div class="col-span-2 lg:col-span-2 border-l pl-4 border-slate-100 bg-slate-50 rounded-lg p-2">
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-wider mb-1">預估淨損益 (P&L)</p>
+                        <div class="text-4xl font-black" id="net-profit">-$105,000</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-600 rounded-2xl shadow-md p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-6xl">💰</div>
+                <p class="text-blue-100 text-xs uppercase font-bold tracking-wider">手動調整現金贊助</p>
+                <div class="mt-2 flex items-center">
+                    <span class="text-2xl font-bold mr-2">$</span>
+                    <input type="number" id="input-sponsorship" value="0" step="1000" class="bg-blue-500 border-none text-white text-3xl font-black w-full focus:ring-2 focus:ring-white rounded-lg p-1 outline-none">
+                </div>
+                <p class="text-blue-200 text-[10px] mt-2 leading-tight">＊包含企業及家長現金贊助</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 售票模擬區 -->
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 border border-slate-100 relative">
+                <div class="absolute top-6 right-6 text-right">
+                    <div class="text-xs font-bold text-slate-400">目前總參與人數</div>
+                    <div class="text-3xl font-black text-indigo-600"><span id="val-total-people">25</span> <span class="text-sm">人</span></div>
+                </div>
+
+                <h2 class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-widest">🎟️ 票種銷售模擬</h2>
+                <div class="space-y-6 pr-24">
+                    <div>
+                        <div class="flex justify-between text-sm mb-2 font-bold"><span>早鳥 ($900)</span><span class="text-blue-600"><span id="val-early">25</span>/50張</span></div>
+                        <input type="range" id="slider-early" min="0" max="50" value="25">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-2 font-bold"><span>單人 ($1200)</span><span class="text-blue-600"><span id="val-single">0</span>/10張</span></div>
+                        <input type="range" id="slider-single" min="0" max="10" value="0">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-2 font-bold"><span>雙人 ($2000)</span><span class="text-blue-600"><span id="val-double">0</span>/20張</span></div>
+                        <input type="range" id="slider-double" min="0" max="20" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 動態成本設定區 -->
+            <div class="bg-indigo-50/50 rounded-2xl shadow-sm p-6 border border-indigo-100">
+                <h2 class="text-sm font-bold text-indigo-800 mb-4 uppercase tracking-widest flex items-center gap-2">⚙️ 彈性成本設定</h2>
+                <p class="text-[10px] text-slate-500 mb-4 leading-tight">單價將乘以總參與人數，並自動歸入對應的 P0 或 P3 階段。</p>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
+                        <span class="text-xs font-bold text-slate-700">城市走訪 (P0)</span>
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs text-slate-400">$</span>
+                            <input type="number" id="rate-tour" value="113" class="w-14 text-sm font-bold text-indigo-600 text-right bg-transparent outline-none">
+                            <span class="text-[10px] text-slate-400">/人</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
+                        <span class="text-xs font-bold text-slate-700">人員保險 (P0)</span>
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs text-slate-400">$</span>
+                            <input type="number" id="rate-ins" value="67" class="w-14 text-sm font-bold text-indigo-600 text-right bg-transparent outline-none">
+                            <span class="text-[10px] text-slate-400">/人</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
+                        <span class="text-xs font-bold text-slate-700">晚會點心 (P3)</span>
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs text-slate-400">$</span>
+                            <input type="number" id="rate-snack" value="93" class="w-14 text-sm font-bold text-indigo-600 text-right bg-transparent outline-none">
+                            <span class="text-[10px] text-slate-400">/人</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-indigo-100 text-right">
+                        <span class="text-[10px] text-slate-500">當前動態花費總計: </span>
+                        <span class="text-sm font-black text-indigo-600">$<span id="val-dynamic-total">6,825</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-8 border border-slate-100">
+            <div class="relative h-4 bg-slate-100 rounded-full mb-2">
+                <div id="main-progress" class="absolute h-4 bg-blue-500 rounded-full" style="width: 0%"></div>
+                <div class="absolute w-full flex justify-between px-1 -top-6 text-[10px] font-bold text-slate-400">
+                    <span class="text-blue-600">START</span>
+                    <span id="marker-p0" class="marker-transition absolute transform -translate-x-1/2">P0</span>
+                    <span id="marker-p1" class="marker-transition absolute transform -translate-x-1/2">P1</span>
+                    <span id="marker-p2" class="marker-transition absolute transform -translate-x-1/2">P2</span>
+                    <span class="absolute right-0">P3 終點</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div id="card-p0" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all relative overflow-hidden">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p0">P0 生存底線</h3>
+                <div class="text-lg font-bold mb-1" id="p0-target-text">$25,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">場地租金、保證金<br><span class="text-indigo-500">+ 動態走訪與保險費</span></p>
+            </div>
+
+            <div id="card-p1" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p1">P1 核心品質</h3>
+                <div class="text-lg font-bold mb-1" id="p1-target-text">$55,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：音控舞台設備、預備金</p>
+            </div>
+
+            <div id="card-p2" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p2">P2 人情運作</h3>
+                <div class="text-lg font-bold mb-1" id="p2-target-text">$65,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">累積含：海報印刷、表演者禮金</p>
+            </div>
+
+            <div id="card-p3" class="bg-white p-4 rounded-xl border-2 border-slate-100 opacity-50 transition-all">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-1" id="tag-p3">P3 完整福利</h3>
+                <div class="text-lg font-bold text-rose-500 mb-1" id="p3-target-text">$105,000</div>
+                <p class="text-[10px] text-slate-500 leading-relaxed">形象品、員工餐、慶功宴、會議<br><span class="text-indigo-500">+ 動態晚會點心費</span></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const PRICES = { early: 900, single: 1200, double: 2000 };
+        
+        // 重新精算固定成本 (去除了保險5k 與 點心7k)
+        const FIXED_P0 = 25000; // 場地15k + 保證金10k
+        const FIXED_P1 = 30000; // 音控25k + 預備金5k
+        const FIXED_P2 = 10000; // 海報5k + 禮金5k
+        const FIXED_P3 = 40000; // 形象品15k + 員工餐10k + 慶功宴10k + 會議5k
+
+        const inputs = ['slider-early', 'slider-single', 'slider-double', 'input-sponsorship', 'rate-tour', 'rate-ins', 'rate-snack'];
+        
+        function update() {
+            const early = parseInt(document.getElementById('slider-early').value);
+            const single = parseInt(document.getElementById('slider-single').value);
+            const double = parseInt(document.getElementById('slider-double').value);
+            const sponsor = parseInt(document.getElementById('input-sponsorship').value) || 0;
+
+            const rateTour = parseInt(document.getElementById('rate-tour').value) || 0;
+            const rateIns = parseInt(document.getElementById('rate-ins').value) || 0;
+            const rateSnack = parseInt(document.getElementById('rate-snack').value) || 0;
+
+            // 1. 人數與動態成本
+            const totalPeople = early + single + (double * 2);
+            document.getElementById('val-total-people').innerText = totalPeople;
+
+            const dynCostP0 = totalPeople * (rateTour + rateIns);
+            const dynCostP3 = totalPeople * rateSnack;
+            const totalDynCost = dynCostP0 + dynCostP3;
+            document.getElementById('val-dynamic-total').innerText = totalDynCost.toLocaleString();
+
+            // 更新票種顯示
+            document.getElementById('val-early').innerText = early;
+            document.getElementById('val-single').innerText = single;
+            document.getElementById('val-double').innerText = double;
+
+            // 2. 總收入
+            const ticketRev = (early * PRICES.early) + (single * PRICES.single) + (double * PRICES.double);
+            const totalRev = ticketRev + sponsor;
+            document.getElementById('total-revenue').innerText = `$${totalRev.toLocaleString()}`;
+
+            // 3. 結算各階段門檻
+            const limitP0 = FIXED_P0 + dynCostP0;
+            const limitP1 = limitP0 + FIXED_P1;
+            const limitP2 = limitP1 + FIXED_P2;
+            const limitP3 = limitP2 + FIXED_P3 + dynCostP3;
+            
+            const currentTotalCost = limitP3;
+            document.getElementById('dynamic-cost').innerText = `$${currentTotalCost.toLocaleString()}`;
+            
+            document.getElementById('p0-target-text').innerText = `$${limitP0.toLocaleString()}`;
+            document.getElementById('p1-target-text').innerText = `$${limitP1.toLocaleString()}`;
+            document.getElementById('p2-target-text').innerText = `$${limitP2.toLocaleString()}`;
+            document.getElementById('p3-target-text').innerText = `$${limitP3.toLocaleString()}`;
+
+            // 4. 損益計算
+            const profit = totalRev - currentTotalCost;
+            const profitEl = document.getElementById('net-profit');
+            profitEl.innerText = (profit >= 0 ? '+' : '') + `$${profit.toLocaleString()}`;
+            profitEl.className = `text-4xl font-black ${profit >= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
+
+            // 5. 動態進度條標記位置
+            const progress = Math.min((totalRev / currentTotalCost) * 100, 100);
+            document.getElementById('main-progress').style.width = `${progress}%`;
+
+            document.getElementById('marker-p0').style.left = `${(limitP0 / currentTotalCost) * 100}%`;
+            document.getElementById('marker-p0').innerText = `P0 ($${Math.round(limitP0/1000)}k)`;
+            
+            document.getElementById('marker-p1').style.left = `${(limitP1 / currentTotalCost) * 100}%`;
+            document.getElementById('marker-p1').innerText = `P1 ($${Math.round(limitP1/1000)}k)`;
+            
+            document.getElementById('marker-p2').style.left = `${(limitP2 / currentTotalCost) * 100}%`;
+            document.getElementById('marker-p2').innerText = `P2 ($${Math.round(limitP2/1000)}k)`;
+
+            // 6. 更新卡片狀態
+            const tiers = [
+                { id: 'p0', limit: limitP0 },
+                { id: 'p1', limit: limitP1 }, 
+                { id: 'p2', limit: limitP2 }, 
+                { id: 'p3', limit: limitP3 }
+            ];
+
+            tiers.forEach(tier => {
+                const card = document.getElementById(`card-${tier.id}`);
+                const tag = document.getElementById(`tag-${tier.id}`);
+
+                if (totalRev >= tier.limit) {
+                    card.classList.remove('opacity-50', 'border-slate-100');
+                    card.classList.add('border-blue-500', 'bg-blue-50', 'shadow-md', 'scale-105');
+                    tag.classList.replace('text-slate-400', 'text-blue-600');
+                    if (!tag.innerText.includes('✓')) tag.innerText = `✓ ${tag.innerText}`;
+                    if(tier.id === 'p3') card.querySelector('.text-lg').classList.replace('text-rose-500', 'text-emerald-600');
+                } else {
+                    card.classList.add('opacity-50', 'border-slate-100');
+                    card.classList.remove('border-blue-500', 'bg-blue-50', 'shadow-md', 'scale-105');
+                    tag.classList.replace('text-blue-600', 'text-slate-400');
+                    tag.innerText = tag.innerText.replace('✓ ', '');
+                    if(tier.id === 'p3') card.querySelector('.text-lg').classList.replace('text-emerald-600', 'text-rose-500');
+                }
+            });
+        }
+
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', update));
+        update();
+    </script>
+</body>
+</html>
