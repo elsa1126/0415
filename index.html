@@ -36,15 +36,19 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
 
+    <!-- 全螢幕檢視器容器 -->
     <div id="page-viewer">
+        <!-- 返回按鈕列 -->
         <div class="absolute top-4 left-4 z-[1001]">
             <button onclick="closeViewer()" class="bg-slate-900/80 hover:bg-slate-900 text-white px-4 py-2 rounded-full backdrop-blur-md shadow-lg flex items-center gap-2 transition-all active:scale-95">
                 ← 返回主頁面板
             </button>
         </div>
+        <!-- 子網頁載入框 -->
         <iframe id="viewer-iframe" src=""></iframe>
     </div>
 
+    <!-- 頂部裝飾背景 -->
     <div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-br from-blue-600 to-indigo-700 -z-10"></div>
 
     <div class="max-w-6xl mx-auto px-6 py-12">
@@ -58,8 +62,10 @@
             </div>
         </header>
 
+        <!-- 主要功能網格 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
+            <!-- 網頁 1: 134k v2 (第一位) -->
             <div onclick="openViewer('134k_2.html')" class="glass-card block p-6 rounded-2xl border-2 border-emerald-400 shadow-md ring-4 ring-emerald-500/10">
                 <div class="flex justify-between items-start mb-4">
                     <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-2xl">🔧</div>
@@ -74,19 +80,12 @@
                 </div>
             </div>
 
-            <div onclick="openViewer('134k.html')" class="glass-card block p-6 rounded-2xl border border-white shadow-sm">
-                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-4">🏆</div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">財務模擬 (134k 動態版)</h3>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4">
-                    當前主力版本。包含城市走訪、保險與點心動態成本計算，精準計算解鎖進度。
-                </p>
-                <div class="text-blue-600 text-sm font-bold flex items-center gap-1">
-                    啟動模組 <span>→</span>
+            <!-- 網頁 2: 現金流時間線預估 (第二位) -->
+            <div onclick="openViewer('tine.html')" class="glass-card block p-6 rounded-2xl border-2 border-indigo-400 shadow-md ring-4 ring-indigo-500/10">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center text-2xl">⏳</div>
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded">NEW / 時程</span>
                 </div>
-            </div>
-
-            <div onclick="openViewer('tine.html')" class="glass-card block p-6 rounded-2xl border border-white shadow-sm">
-                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">⏳</div>
                 <h3 class="text-xl font-bold text-slate-800 mb-2">現金流時間線預估</h3>
                 <p class="text-slate-500 text-sm leading-relaxed mb-4">
                     零贊助情境模擬。以時間軸展示資金水位，防範週轉危機。
@@ -96,6 +95,19 @@
                 </div>
             </div>
 
+            <!-- 網頁 3: 134k 最新版 (第三位) -->
+            <div onclick="openViewer('134k.html')" class="glass-card block p-6 rounded-2xl border border-white shadow-sm">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-4">🏆</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">財務模擬 (134k 動態版)</h3>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                    包含城市走訪、保險與點心動態成本計算，精準計算解鎖進度。
+                </p>
+                <div class="text-blue-600 text-sm font-bold flex items-center gap-1">
+                    啟動模組 <span>→</span>
+                </div>
+            </div>
+
+            <!-- 網頁 4: 0415 122k 版 -->
             <div onclick="openViewer('0415 122k.html')" class="glass-card block p-6 rounded-2xl border border-white shadow-sm opacity-80">
                 <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-2xl mb-4">📊</div>
                 <h3 class="text-xl font-bold text-slate-800 mb-2">財務壓力測試 (122k 版)</h3>
@@ -104,11 +116,21 @@
                 </p>
             </div>
 
+            <!-- 網頁 5: 基礎售票模擬器 -->
             <div onclick="openViewer('dashboard.html')" class="glass-card block p-6 rounded-2xl border border-white shadow-sm opacity-80">
                 <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-2xl mb-4">🎟️</div>
                 <h3 class="text-xl font-bold text-slate-800 mb-2">基礎財務模擬器</h3>
                 <p class="text-slate-500 text-sm leading-relaxed mb-4">
                     早期開發版。快速核對單一票價機制。
+                </p>
+            </div>
+
+            <!-- 預留位: 未來擴充 -->
+            <div class="glass-card p-6 rounded-2xl border border-dashed border-slate-300 flex flex-col items-center justify-center text-center opacity-50">
+                <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center text-2xl mb-4">+</div>
+                <h3 class="text-lg font-bold text-slate-400">新增功能模組</h3>
+                <p class="text-slate-400 text-xs mt-2">
+                    持續擴充中...
                 </p>
             </div>
 
